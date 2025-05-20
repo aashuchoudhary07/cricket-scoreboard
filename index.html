@@ -1,0 +1,214 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cricket Scoreboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #555;
+            padding: 40px;
+            color: #cd4343;
+        }
+
+        .scoreboard {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007b43;
+        }
+
+        .scoreboard button {
+            margin: 0 5px;
+            padding: 6px 12px;
+            background-color: #007b43;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .scoreboard button:hover {
+            background-color: #0fb6e0;
+        }
+
+        .score {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .overs {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .current-over {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .controls-section {
+            max-width: 600px;
+            margin: auto;
+            background-color: #c8c4c4;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .controls-section h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #007b43;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007b43;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .controls button:hover {
+            background-color: #00315c;
+        }
+
+        @media (max-width: 600px) {
+            .scoreboard {
+                padding: 20px;
+            }
+
+            .score {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scoreboard">
+        <h1 style="color: goldenrod;"> Cricket Scoreboard</h1>
+        <div style="text-align:center; margin-bottom: 15px;">
+            <button onclick="switchInning(0)">1st Inning</button>
+            <button onclick="switchInning(1)">2nd Inning</button>
+        </div>
+
+        <div class="score">
+            Score: <span id="runs">0</span>/<span id="wickets">0</span>
+        </div>
+        <div class="overs">
+            Overs: <span id="overs">0.0</span>
+        </div>
+        <div class="current-over">
+            This Over: <span id="currentOverRuns">-</span>
+        </div>
+    </div>
+
+    <div class="controls-section">
+        <h2>Manual Score Entry</h2>
+        <div class="controls">
+            <button onclick="addRun(1)">+1 Run</button>
+            <button onclick="addRun(2)">+2 Runs</button>
+            <button onclick="addRun(4)">+4 (Boundary)</button>
+            <button onclick="addRun(6)">+6 (Six)</button>
+            <button onclick="addWicket()">Wicket</button>
+            <button onclick="nextBall()">Next Ball</button>
+            <button onclick="addWide()">Wide Ball</button>
+            <button onclick="reset()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let innings = [
+            { runs: 0, wickets: 0, balls: 0, currentOver: [] },
+            { runs: 0, wickets: 0, balls: 0, currentOver: [] }
+        ];
+        let currentInning = 0;
+
+        function updateDisplay() {
+            let inning = innings[currentInning];
+            document.getElementById('runs').textContent = inning.runs;
+            document.getElementById('wickets').textContent = inning.wickets;
+            let overs = Math.floor(inning.balls / 6) + "." + (inning.balls % 6);
+            document.getElementById('overs').textContent = overs;
+            document.getElementById('currentOverRuns').textContent = inning.currentOver.join(" ") || "-";
+        }
+
+        function addRun(run) {
+            let inning = innings[currentInning];
+            inning.runs += run;
+            inning.balls += 1;
+            inning.currentOver.push(run);
+            if (inning.currentOver.length === 6) inning.currentOver = [];
+            updateDisplay();
+        }
+
+        function addWicket() {
+            let inning = innings[currentInning];
+            if (inning.wickets < 10) {
+                inning.wickets += 1;
+                inning.balls += 1;
+                inning.currentOver.push("W");
+                if (inning.currentOver.length === 6) inning.currentOver = [];
+                updateDisplay();
+            }
+        }
+
+        function addWide() {
+            let inning = innings[currentInning];
+            inning.runs += 1;
+            inning.currentOver.push("Wd");
+            updateDisplay();
+        }
+
+        function nextBall() {
+            let inning = innings[currentInning];
+            inning.balls += 1;
+            inning.currentOver.push("•");
+            if (inning.currentOver.length === 6) inning.currentOver = [];
+            updateDisplay();
+        }
+
+        function reset() {
+            innings = [
+                { runs: 0, wickets: 0, balls: 0, currentOver: [] },
+                { runs: 0, wickets: 0, balls: 0, currentOver: [] }
+            ];
+            currentInning = 0;
+            updateDisplay();
+        }
+
+        function switchInning(index) {
+            currentInning = index;
+            updateDisplay();
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
